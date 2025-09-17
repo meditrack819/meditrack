@@ -4,11 +4,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 // ✅ API config
-const API_BASE =
-  process.env.REACT_APP_BACKEND_URL ||
-  "https://api.meditrack.space";   // fallback to deployed backend
-
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "/api";
 const API = `${API_BASE}/patients`;
+
 
 
 /* ---------------- Styles scoped to this page ---------------- */
