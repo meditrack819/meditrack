@@ -2,15 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-const patientRoutes = require("./routes/patients");
-
 const app = express();
-app.use(cors());
+app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
 app.use(bodyParser.json());
 
-// Mount patient routes at /patients
-app.use("/patients", require("./routes/patients")); 
-app.use("/prescriptions", require("./routes/prescriptions")); 
+// Routes
+app.use("/patients", require("./routes/patients"));
+app.use("/prescriptions", require("./routes/prescriptions"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
