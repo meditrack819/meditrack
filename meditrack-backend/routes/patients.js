@@ -10,11 +10,9 @@ const crypto = require("crypto");
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn(
-    "⚠️ SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing. Auth actions will be skipped when creating patients with email."
-  );
-}
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "https://api.meditrack.space";
+const API = `${API_BASE}/patients`;
+
 const supabaseAdmin =
   SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
     ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
