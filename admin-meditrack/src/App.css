@@ -1,0 +1,170 @@
+/* Layout container */
+.app {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: #1e40af;
+  color: white;
+  padding: 20px;
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  transform: translateX(0);
+  transition: transform 0.25s ease;
+}
+
+.sidebar .logo {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 30px;
+  letter-spacing: 0.3px;
+}
+
+/* Nav items */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #e0e7ff;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-item:hover {
+  background: #3749bb;
+  color: #fff;
+}
+
+.nav-item.active {
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  margin-left: 220px;
+  padding: 20px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+}
+
+/* Top bar */
+.topbar {
+  background: #f3f4f6;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Hamburger (hidden on desktop) */
+.hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  cursor: pointer;
+  padding: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 6px; /* spacing between bars */
+}
+
+.hamburger .bar {
+  width: 24px;
+  height: 3px;
+  background: #1e40af; /* strong blue */
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.hamburger:hover .bar,
+.hamburger:focus .bar {
+  background: #2563eb;
+}
+
+/* Backdrop for mobile drawer */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17,24,39,0.35);
+  backdrop-filter: blur(1px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 20;
+}
+.backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 80%;
+    max-width: 280px;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+  }
+  .app.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .app.sidebar-open .backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Focus outlines */
+.hamburger:focus,
+.nav-item:focus,
+.backdrop:focus {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .backdrop {
+    transition: none;
+  }
+}
