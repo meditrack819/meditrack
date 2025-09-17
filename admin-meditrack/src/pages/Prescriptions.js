@@ -7,7 +7,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 const API_BASE =
   process.env.REACT_APP_BACKEND_URL ||
   process.env.REACT_APP_API_URL ||
-  "http://localhost:5000";
+  "/api";
 const RX_API = `${API_BASE}/prescriptions`;
 const PT_API = `${API_BASE}/patients`;
 
