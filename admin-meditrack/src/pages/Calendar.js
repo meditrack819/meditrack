@@ -6,7 +6,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 /* ---------- API ---------- */
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "/api";
 const api = axios.create({ baseURL: API_BASE, timeout: 15000 });
 const getJSON = async (path, params) => (await api.get(path, { params })).data;
 const postJSON = async (path, body) => (await api.post(path, body)).data;
