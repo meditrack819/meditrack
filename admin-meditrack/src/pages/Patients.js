@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "/api";
 const API = `${API_BASE}/patients`;
 
 /* ---------------- Styles scoped to this page ---------------- */
