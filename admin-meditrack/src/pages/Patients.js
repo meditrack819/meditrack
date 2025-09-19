@@ -3,9 +3,16 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// ✅ API config
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "/api";
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://meditrack.space/api";
 const API = `${API_BASE}/patients`;
+
+useEffect(() => {
+  fetch(API)
+    .then(res => res.json())
+    .then(data => setPatients(data))
+    .catch(err => console.error("Fetch error:", err));
+}, []);
+
 
 
 
