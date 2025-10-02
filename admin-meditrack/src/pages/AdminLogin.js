@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-// Hardcode backend API URL
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000/api";
-const API = `${API_BASE}/patients`;
+// ✅ Use .env variable correctly
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const API = `${API_BASE}/api/patients`;
+
 
 
 export default function AdminLogin() {
@@ -19,7 +20,7 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      const url = `${API_BASE}/auth/staff/login`;
+      const url = `${API_BASE}/api/auth/staff/login`;
       console.log("🔎 Posting to:", url);
 
       const { data } = await axios.post(
@@ -94,4 +95,5 @@ export default function AdminLogin() {
     </div>
   );
 }
+
 
