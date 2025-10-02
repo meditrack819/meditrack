@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 // ✅ Use .env variable correctly
 const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
-const API = `${API_BASE}/api/patients`;
+const API = `${API_BASE}/api/staff`;
 
 
 
@@ -95,5 +95,6 @@ export default function AdminLogin() {
     </div>
   );
 }
+
 
 
