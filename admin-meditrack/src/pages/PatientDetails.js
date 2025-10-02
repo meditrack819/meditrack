@@ -1,30 +1,19 @@
 // src/pages/PatientDetails.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from "chart.js";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+  ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend
+} from "recharts";
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 const API = `${API_BASE}/api/patients`;
 
 /* ---------------- Labels (Tagalog, DOH Form) ---------------- */
 const FIELD_LABELS = {
-  // Kasaysayan ng Sakit
   diabetes: "Diabetes", hypertension: "Altapresyon", cancer: "Kanser",
   cancer_site: "Bahagi ng Kanser", lung_disease: "Sakit sa Baga", eye_disease: "Sakit sa Mata",
 
-  // Pananakit ng Dibdib
   chest_pain_exertion: "Pananakit ng dibdib kapag kumikilos",
   chest_pain_spread: "Sumasakit hanggang braso/panga",
   chest_pain_fast: "Mabilis ang tibok ng puso na may sakit",
@@ -34,32 +23,25 @@ const FIELD_LABELS = {
   chest_pain_30min: "Sakit na tumatagal ng lampas 30 minuto",
   chest_pain_other: "Iba pang sintomas",
 
-  // Kasaysayan ng Pamilya
   family_sakit_puso: "Sakit sa Puso (Pamilya)", family_stroke: "Stroke (Pamilya)", family_diabetes: "Diabetes (Pamilya)",
   family_cancer: "Kanser (Pamilya)", family_sakit_lungs: "Sakit sa Baga (Pamilya)", family_sakit_bato: "Sakit sa Bato (Pamilya)",
   family_other: "Iba pang Kondisyon sa Pamilya",
 
-  // Pamumuhay - Nutrisyon
   gulay: "Kumakain ng Gulay", prutas: "Kumakain ng Prutas", isda: "Kumakain ng Isda",
   karne: "Kumakain ng Karne", processed: "Kumakain ng Processed Food",
   maalat_per_week: "Ilang Beses Kumain ng Maalat kada Linggo",
 
-  // Pamumuhay - Alak
   umiinom: "Umiinom ng Alak", klase_alak: "Uri ng Alak", gaano_karami: "Dami ng Alak",
   kadalas_inom: "Gaano Kadals Inom", binge: "Binge Drinking",
 
-  // Pamumuhay - Paninigarilyo
   naninigarilyo: "Naninigarilyo", sticks_per_day: "Ilang Stick bawat Araw",
   tumigil: "Tumigil sa Paninigarilyo", years_quit: "Ilang Taon Mula nang Tumigil",
   ever_100_sticks: "Naka-100 stick na sa buong buhay",
 
-  // Pamumuhay - Ehersisyo
   ehersisyo: "Nag-eehersisyo", uri_ehersisyo: "Uri ng Ehersisyo", sapat_ehersisyo: "Sapat ba ang Ehersisyo",
 
-  // Stress
   stress: "May Stress", stress_dahilan: "Sanhi ng Stress", stress_effect: "Epekto ng Stress",
 
-  // Pagsusuri ng Panganib
   weight: "Timbang (kg)", height: "Taas (cm)", waist: "Baywang (cm)", hip: "Balakang (cm)",
   bmi: "BMI", wh_ratio: "Waist-Hip Ratio",
   fbs: "Fasting Blood Sugar", rbs: "Random Blood Sugar",
@@ -68,12 +50,10 @@ const FIELD_LABELS = {
   urine_protein: "Protein sa Ihi", urine_ketones: "Ketones sa Ihi",
   risk_profile: "Porsyento ng Panganib",
 
-  // Screening ng Kanser
   cancer_screened: "Nagpa-Screening ng Kanser",
   cancer_screen_type: "Uri ng Screening",
   cancer_screen_result: "Resulta ng Screening",
 
-  // Vital Signs
   temp: "Temperatura (°C)", hr: "Tibok ng Puso (bpm)", rr: "Paghinga (beses/minuto)",
   spo2: "Oxygen Saturation (%)", systolic: "Systolic BP", diastolic: "Diastolic BP",
 };
@@ -128,6 +108,38 @@ const FIELD_GROUPS = {
   "Screening ng Kanser": ["cancer_screened","cancer_screen_type","cancer_screen_result"],
 };
 
+/* ---------------- Vitals Chart Component ---------------- */
+function VitalsChart({ vitals }) {
+  const data = vitals.map(v => ({
+    date: new Date(v.created_at).toLocaleDateString(),
+    temp: v.temp,
+    hr: v.hr,
+    rr: v.rr,
+    spo2: v.spo2,
+    systolic: v.systolic,
+    diastolic: v.diastolic,
+  }));
+
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Line type="monotone" dataKey="temp" stroke="#ef4444" name="Temp (°C)" />
+        <Line type="monotone" dataKey="hr" stroke="#3b82f6" name="HR (bpm)" />
+        <Line type="monotone" dataKey="rr" stroke="#22c55e" name="RR" />
+        <Line type="monotone" dataKey="spo2" stroke="#a855f7" name="SpO₂ (%)" />
+        <Line type="monotone" dataKey="systolic" stroke="#f59e0b" name="Systolic BP" />
+        <Line type="monotone" dataKey="diastolic" stroke="#6366f1" name="Diastolic BP" />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+/* ---------------- Main Component ---------------- */
 export default function PatientDetails({ patientId, onClose }) {
   const [patient, setPatient] = useState(null);
   const [form, setForm] = useState({});
@@ -455,4 +467,3 @@ export default function PatientDetails({ patientId, onClose }) {
     </>
   );
 }
-
