@@ -4,7 +4,9 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 // Hardcode backend API URL
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000/api";
+const API = `${API_BASE}/patients`;
+
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -92,3 +94,4 @@ export default function AdminLogin() {
     </div>
   );
 }
+
