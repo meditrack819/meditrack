@@ -7,6 +7,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 
 /* ---------- API ---------- */
 const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const API = `${API_BASE}/api/patients`;
 const api = axios.create({ baseURL: API_BASE, timeout: 15000 });
 const getJSON = async (path, params) => (await api.get(path, { params })).data;
 const postJSON = async (path, body) => (await api.post(path, body)).data;
@@ -867,3 +868,4 @@ export default function Calendar({ serviceType /* optional: "medical" | "dental"
     </div>
   );
 }
+
