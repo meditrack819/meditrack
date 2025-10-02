@@ -456,23 +456,3 @@ export default function PatientDetails({ patientId, onClose }) {
   );
 }
 
-/* ---------------- Vitals Chart ---------------- */
-function VitalsChart({ vitals }) {
-  const labels = vitals.map(v => new Date(v.created_at).toLocaleDateString());
-  const data = {
-    labels,
-    datasets: [
-      { label: "Temperature (°C)", data: vitals.map(v=>v.temp), borderColor:"red", tension:0.3 },
-      { label: "HR (bpm)", data: vitals.map(v=>v.hr), borderColor:"blue", tension:0.3 },
-      { label: "Systolic BP", data: vitals.map(v=>v.systolic), borderColor:"orange", tension:0.3 },
-      { label: "Diastolic BP", data: vitals.map(v=>v.diastolic), borderColor:"green", tension:0.3 },
-      { label:"Fever Threshold (37.5°C)", data:new Array(vitals.length).fill(37.5), borderColor:"rgba(255,0,0,0.6)", borderDash:[6,6], pointRadius:0 },
-      { label:"HR Upper (100)", data:new Array(vitals.length).fill(100), borderColor:"rgba(0,0,255,0.5)", borderDash:[6,6], pointRadius:0 },
-      { label:"HR Lower (60)", data:new Array(vitals.length).fill(60), borderColor:"rgba(0,0,255,0.5)", borderDash:[6,6], pointRadius:0 },
-      { label:"Systolic Normal (120)", data:new Array(vitals.length).fill(120), borderColor:"rgba(255,165,0,0.7)", borderDash:[6,6], pointRadius:0 },
-      { label:"Diastolic Normal (80)", data:new Array(vitals.length).fill(80), borderColor:"rgba(0,128,0,0.7)", borderDash:[6,6], pointRadius:0 }
-    ]
-  };
-  const options = { responsive:true, plugins:{ legend:{ position:"top" } }, scales:{ y:{ beginAtZero:true } } };
-  return <Line data={data} options={options} />;
-}
