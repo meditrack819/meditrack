@@ -12,12 +12,14 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "http://localhost:3000",     // local dev
-      "https://meditrack.space",   // production frontend
+      "http://localhost:3000",
+      "https://meditrack.space",
+      "https://www.meditrack.space",
     ],
     credentials: true,
   })
 );
+
 app.use(express.json());
 
 /* -----------------------------------------------------
