@@ -4,8 +4,8 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 // ✅ Use .env variable correctly
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
-const API = `${API_BASE}/api/auth/login`;
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://meditrack.space/api";
+const API = `${API_BASE}/auth/login`;
 
 
 export default function AdminLogin() {
@@ -94,6 +94,7 @@ export default function AdminLogin() {
     </div>
   );
 }
+
 
 
 
