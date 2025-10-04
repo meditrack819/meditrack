@@ -13,6 +13,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
+      "http://127.0.0.1:3000",
       "https://meditrack.space",
       "https://www.meditrack.space",
     ],
@@ -60,10 +61,16 @@ try {
 }
 
 /* -----------------------------------------------------
-   🧪 Direct Test Route (bypasses router)
+   🧪 Test Routes
 ----------------------------------------------------- */
+// Direct test — bypasses routes
 app.get("/api/auth/test-direct", (req, res) => {
   res.json({ message: "✅ Direct route from server.js works" });
+});
+
+// Shortcut root test
+app.get("/api/test", (req, res) => {
+  res.json({ message: "✅ API is alive" });
 });
 
 /* -----------------------------------------------------
