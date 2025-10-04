@@ -6,8 +6,8 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from "recharts";
 
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
-const API = `${API_BASE}/api/patients`;
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://meditrack.space/api";
+const API = `${API_BASE}/patients`;
 
 /* ---------------- Labels (Tagalog, DOH Form) ---------------- */
 const FIELD_LABELS = {
@@ -467,4 +467,5 @@ export default function PatientDetails({ patientId, onClose }) {
     </>
   );
 }
+
 
