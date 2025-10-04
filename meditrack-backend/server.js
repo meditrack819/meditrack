@@ -12,8 +12,8 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "http://localhost:3000",
-      "https://meditrack.space", // ✅ production frontend
+      "http://localhost:3000",     // local dev
+      "https://meditrack.space",   // production frontend
     ],
     credentials: true,
   })
@@ -21,7 +21,7 @@ app.use(
 app.use(express.json());
 
 /* -----------------------------------------------------
-   📜 Request Logger (for debugging)
+   🧾 Logger (see all incoming requests)
 ----------------------------------------------------- */
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.originalUrl}`);
@@ -56,6 +56,13 @@ try {
 } catch (err) {
   console.error("❌ Route mounting error:", err);
 }
+
+/* -----------------------------------------------------
+   🧪 Direct Test Route (bypasses router)
+----------------------------------------------------- */
+app.get("/api/auth/test-direct", (req, res) => {
+  res.json({ message: "✅ Direct route from server.js works" });
+});
 
 /* -----------------------------------------------------
    💚 Health Check
