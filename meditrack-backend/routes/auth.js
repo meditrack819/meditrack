@@ -99,7 +99,7 @@ router.post("/staff/login", async (req, res) => {
   }
 });
 
-/* ---------- Generic Login (alias for staff/login) ---------- */
+/* ---------- Generic Login (alias) ---------- */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -132,8 +132,6 @@ router.post("/login", async (req, res) => {
 /* =====================================================
    🧍‍♀️ PATIENT AUTH
    ===================================================== */
-
-/* ---------- Patient Register ---------- */
 router.post("/patient/register", async (req, res) => {
   try {
     const { email, password, first_name, last_name } = req.body;
