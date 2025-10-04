@@ -1,3 +1,4 @@
+// backend/routes/auth.js
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -6,9 +7,16 @@ const { pool } = require("../db");
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
+/* -----------------------------------------------------
+   🧪 Test Route — confirms /api/auth/test works
+----------------------------------------------------- */
+router.get("/test", (req, res) => {
+  res.json({ message: "✅ Auth route working fine" });
+});
 
-
-/* --------------------- Helpers --------------------- */
+/* -----------------------------------------------------
+   🔑 Helper — JWT generator
+----------------------------------------------------- */
 function generateToken(user) {
   return jwt.sign(
     {
@@ -21,9 +29,9 @@ function generateToken(user) {
   );
 }
 
-/* ===================================================
-   STAFF AUTH
-   =================================================== */
+/* =====================================================
+   👥 STAFF AUTH
+   ===================================================== */
 
 /* ---------- Staff Register ---------- */
 router.post("/staff/register", async (req, res) => {
@@ -52,11 +60,12 @@ router.post("/staff/register", async (req, res) => {
 
     const user = rows[0];
     const token = generateToken(user);
-
     return res.json({ success: true, token, user });
   } catch (err) {
     console.error("❌ Staff register error:", err);
-    return res.status(500).json({ error: "Server error during staff registration" });
+    return res
+      .status(500)
+      .json({ error: "Server error during staff registration" });
   }
 });
 
@@ -83,7 +92,6 @@ router.post("/staff/login", async (req, res) => {
 
     const token = generateToken(user);
     delete user.password;
-
     return res.json({ success: true, token, user });
   } catch (err) {
     console.error("❌ Staff login error:", err);
@@ -91,7 +99,7 @@ router.post("/staff/login", async (req, res) => {
   }
 });
 
-/* ---------- Generic Login (alias for staff login) ---------- */
+/* ---------- Generic Login (alias) ---------- */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -114,7 +122,6 @@ router.post("/login", async (req, res) => {
 
     const token = generateToken(user);
     delete user.password;
-
     return res.json({ success: true, token, user });
   } catch (err) {
     console.error("❌ Generic login error:", err);
@@ -122,9 +129,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/* ===================================================
-   PATIENT AUTH
-   =================================================== */
+/* =====================================================
+   🧍‍♀️ PATIENT AUTH
+   ===================================================== */
 router.post("/patient/register", async (req, res) => {
   try {
     const { email, password, first_name, last_name } = req.body;
@@ -151,11 +158,12 @@ router.post("/patient/register", async (req, res) => {
 
     const user = rows[0];
     const token = generateToken(user);
-
     return res.json({ success: true, token, user });
   } catch (err) {
     console.error("❌ Patient register error:", err);
-    return res.status(500).json({ error: "Server error during patient registration" });
+    return res
+      .status(500)
+      .json({ error: "Server error during patient registration" });
   }
 });
 
