@@ -3,10 +3,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-// ✅ Use .env variable correctly
+// ✅ Correct base URL
 const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
-const url = `${API_BASE}/api/auth/staff/login`;
-
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -19,6 +17,7 @@ export default function AdminLogin() {
     setError("");
 
     try {
+      // ✅ Final correct API endpoint
       const url = `${API_BASE}/api/auth/staff/login`;
       console.log("🔎 Posting to:", url);
 
@@ -35,7 +34,7 @@ export default function AdminLogin() {
         return;
       }
 
-      // Save session
+      // ✅ Save session
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -44,11 +43,10 @@ export default function AdminLogin() {
 
       console.log("role:", role, "service:", service);
 
-      // ✅ Redirect based on role/service
+      // ✅ Redirect logic
       if (role === "superadmin") {
         navigate("/patients");
       } else if (service) {
-        // FIX: service comes first in the path
         navigate(`/${service}/calendar`);
       } else {
         setError(`Unauthorized or unknown service: ${service || "none"}`);
@@ -58,7 +56,7 @@ export default function AdminLogin() {
       if (err.code === "ECONNABORTED") {
         setError("Request timed out. Please try again or check the server.");
       } else if (err.request && !err.response) {
-        setError("Cannot reach backend. Is it running on http://localhost:5000?");
+        setError("Cannot reach backend. Is it running on the server?");
       } else {
         setError(err.response?.data?.error || "Login failed");
       }
@@ -94,19 +92,3 @@ export default function AdminLogin() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
