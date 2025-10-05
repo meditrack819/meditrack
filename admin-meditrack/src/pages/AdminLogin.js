@@ -19,7 +19,7 @@ export default function AdminLogin() {
 
     try {
       // ✅ Final correct API endpoint
-      const url = `${API_BASE}/api/auth/staff/login`;
+      const url = `${API_BASE}/auth/staff/login`;
       console.log("🔎 Posting to:", url);
 
       const { data } = await axios.post(
@@ -93,5 +93,6 @@ export default function AdminLogin() {
     </div>
   );
 }
+
 
 
