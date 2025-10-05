@@ -1,3 +1,8 @@
+/**
+ * routes/auth.js
+ * Authentication Routes for Staff and Patients
+ */
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -7,7 +12,8 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 /* -----------------------------------------------------
-   🧪 Test Route — confirms /api/auth/test works
+   🧪 TEST ROUTE — Confirms backend connection
+   Example: https://meditrack.space/api/auth/test
 ----------------------------------------------------- */
 router.get("/test", (req, res) => {
   console.log("✅ /api/auth/test hit successfully");
@@ -15,7 +21,7 @@ router.get("/test", (req, res) => {
 });
 
 /* -----------------------------------------------------
-   🔑 Helper — JWT generator
+   🔐 Helper: Generate JWT Token
 ----------------------------------------------------- */
 function generateToken(user) {
   return jwt.sign(
@@ -30,7 +36,7 @@ function generateToken(user) {
 }
 
 /* =====================================================
-   👥 STAFF AUTH
+   👥 STAFF AUTHENTICATION
    ===================================================== */
 
 /* ---------- Staff Register ---------- */
@@ -45,6 +51,7 @@ router.post("/staff/register", async (req, res) => {
     const existing = await pool.query("SELECT * FROM staff WHERE email = $1", [
       email.toLowerCase(),
     ]);
+
     if (existing.rows.length > 0) {
       return res.status(400).json({ error: "Email already registered" });
     }
@@ -60,6 +67,7 @@ router.post("/staff/register", async (req, res) => {
 
     const user = rows[0];
     const token = generateToken(user);
+
     res.json({ success: true, token, user });
   } catch (err) {
     console.error("❌ Staff register error:", err);
@@ -71,6 +79,7 @@ router.post("/staff/register", async (req, res) => {
 router.post("/staff/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
@@ -85,6 +94,7 @@ router.post("/staff/login", async (req, res) => {
 
     const user = rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
+
     if (!validPassword) {
       return res.status(401).json({ error: "Invalid password" });
     }
@@ -99,10 +109,11 @@ router.post("/staff/login", async (req, res) => {
   }
 });
 
-/* ---------- Generic Login (Alias) ---------- */
+/* ---------- Generic Login (Alias for Staff) ---------- */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
@@ -110,12 +121,14 @@ router.post("/login", async (req, res) => {
     const { rows } = await pool.query("SELECT * FROM staff WHERE email = $1", [
       email.toLowerCase(),
     ]);
+
     if (rows.length === 0) {
       return res.status(404).json({ error: "User not found with that email" });
     }
 
     const user = rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
+
     if (!validPassword) {
       return res.status(401).json({ error: "Invalid password" });
     }
@@ -131,7 +144,7 @@ router.post("/login", async (req, res) => {
 });
 
 /* =====================================================
-   🧍‍♀️ PATIENT AUTH
+   🧍‍♀️ PATIENT AUTHENTICATION
    ===================================================== */
 router.post("/patient/register", async (req, res) => {
   try {
@@ -165,11 +178,11 @@ router.post("/patient/register", async (req, res) => {
     res.json({ success: true, token, user });
   } catch (err) {
     console.error("❌ Patient register error:", err);
-    res
-      .status(500)
-      .json({ error: "Server error during patient registration" });
+    res.status(500).json({ error: "Server error during patient registration" });
   }
 });
 
+/* =====================================================
+   ✅ EXPORT ROUTER
+   ===================================================== */
 module.exports = router;
-
