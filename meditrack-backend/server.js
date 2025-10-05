@@ -38,7 +38,7 @@ try {
   console.log("⏳ Loading routes...");
 
   const authRoutes = require("./routes/auth");
-  app.use("/auth", authRoutes);
+  app.use("/auth", authRoutes); // ✅ NO /api prefix here
   console.log("✅ Auth routes mounted at /auth");
 
   const apptRoutes = require("./routes/appointments");
@@ -59,6 +59,7 @@ try {
 } catch (err) {
   console.error("❌ Route mounting error:", err);
 }
+
 
 
 /* -----------------------------------------------------
