@@ -4,7 +4,7 @@ const router = express.Router();
 const { pool } = require("../db");
 const { createClient } = require("@supabase/supabase-js");
 const crypto = require("crypto");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { sendSMS } = require("../utils/sms"); // ✅ import SMS utility
 
 // ✅ Proper node-fetch wrapper for CommonJS
@@ -331,5 +331,6 @@ router.post("/:id/vitals", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 module.exports = router;
