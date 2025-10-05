@@ -80,35 +80,25 @@ router.post("/staff/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+    // Query staff table (adjust table name if different)
+    const result = await pool.query("SELECT * FROM staff WHERE email = $1", [email]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Not Found" });
     }
 
-    const { rows } = await pool.query("SELECT * FROM staff WHERE email = $1", [
-      email.toLowerCase(),
-    ]);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User not found with that email" });
-    }
-
-    const user = rows[0];
+    const user = result.rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
-
     if (!validPassword) {
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(400).json({ error: "Invalid password" });
     }
 
     const token = generateToken(user);
-    delete user.password;
-
-    res.json({ success: true, token, user });
+    res.json({ message: "Login successful", token, user });
   } catch (err) {
-    console.error("❌ Staff login error:", err);
-    res.status(500).json({ error: "Server error during staff login" });
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
-
 /* ---------- Generic Login (Alias for Staff) ---------- */
 router.post("/login", async (req, res) => {
   try {
@@ -186,3 +176,4 @@ router.post("/patient/register", async (req, res) => {
    ✅ EXPORT ROUTER
    ===================================================== */
 module.exports = router;
+
