@@ -75,7 +75,6 @@ app.get("/api/test", (req, res) => {
 app.get("/api/auth/test", (req, res) => {
   res.json({ message: "✅ Auth route working fine" });
 });
-
 /* -----------------------------------------------------
    💚 Health Check
 ----------------------------------------------------- */
