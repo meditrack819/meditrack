@@ -65,34 +65,34 @@ app.use((req, res, next) => {
 });
 
 /* -----------------------------------------------------
-   🚏 Routes
+   🚏 Routes — load and verify mounts
 ----------------------------------------------------- */
 try {
   console.log("⏳ Loading routes...");
 
   const authRoutes = require("./routes/auth");
-  app.use("/api/auth", authRoutes); // ✅ NO /api prefix here
-  console.log("✅ Auth routes mounted at /auth");
+  app.use("/api/auth", authRoutes);
+  console.log("✅ Auth routes mounted at /api/auth");
 
   const apptRoutes = require("./routes/appointments");
   app.use("/api/appointments", apptRoutes);
-  console.log("✅ Appointment routes mounted at /appointments");
+  console.log("✅ Appointment routes mounted at /api/appointments");
 
   const patientRoutes = require("./routes/patients");
   app.use("/api/patients", patientRoutes);
-  console.log("✅ Patient routes mounted at /patients");
+  console.log("✅ Patient routes mounted at /api/patients");
 
   const prescriptionRoutes = require("./routes/prescriptions");
   app.use("/api/prescriptions", prescriptionRoutes);
-  console.log("✅ Prescription routes mounted at /prescriptions");
+  console.log("✅ Prescription routes mounted at /api/prescriptions");
 
   const stockRoutes = require("./routes/stock");
   app.use("/api/stock", stockRoutes);
-  console.log("✅ Stock routes mounted at /stock");
+  console.log("✅ Stock routes mounted at /api/stock");
+
 } catch (err) {
   console.error("❌ Route mounting error:", err);
 }
-
 
 
 /* -----------------------------------------------------
