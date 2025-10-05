@@ -8,10 +8,8 @@ import {
   LineChart, Line
 } from "recharts";
 
-const API =
-  process.env.REACT_APP_BACKEND_URL ||
-  process.env.REACT_APP_API_URL ||
-  "http://localhost:5000/api";
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+
 
 
 // ML backend (FastAPI/uvicorn) — must match .env
