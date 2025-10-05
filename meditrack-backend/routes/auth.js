@@ -1,4 +1,3 @@
-// backend/routes/auth.js
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -173,3 +172,4 @@ router.post("/patient/register", async (req, res) => {
 });
 
 module.exports = router;
+
