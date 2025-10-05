@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 // ✅ Correct base URL
 const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const url = `${API_BASE}/api/auth/staff/login`;
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -92,3 +93,4 @@ export default function AdminLogin() {
     </div>
   );
 }
+
