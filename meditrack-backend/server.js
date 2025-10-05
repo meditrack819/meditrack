@@ -21,11 +21,10 @@ app.use(
     credentials: true,
   })
 );
-
 app.use(express.json());
 
 /* -----------------------------------------------------
-   🧾 Logger — show all incoming requests
+   🧾 Logger
 ----------------------------------------------------- */
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.originalUrl}`);
@@ -33,7 +32,7 @@ app.use((req, res, next) => {
 });
 
 /* -----------------------------------------------------
-   🛣️ Load and verify route mounts
+   🛣️ Routes — load and verify mounts
 ----------------------------------------------------- */
 try {
   console.log("⏳ Loading routes...");
@@ -67,7 +66,7 @@ try {
 }
 
 /* -----------------------------------------------------
-   🧪 Test Routes
+   🧪 Direct Test Routes
 ----------------------------------------------------- */
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ API is alive" });
