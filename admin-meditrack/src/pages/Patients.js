@@ -4,8 +4,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PatientDetails from "./PatientDetails"; // ✅ new modal with Medical History
 
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://meditrack.space/api";
-const API = `${API_BASE}/patients`;
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const API = `${API_BASE}/api/patients`;
 
 /* ---------------- Styles ---------------- */
 const Styles = () => (
@@ -370,6 +370,7 @@ export default function Patients() {
     </div>
   );
 }
+
 
 
 
