@@ -5,7 +5,7 @@ const { pool } = require("../db");
 const { createClient } = require("@supabase/supabase-js");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const { sendSMS } = require("../utils/sms"); // ✅ import SMS utility
+// const sms = require("../utils/sms");
 
 // ✅ Proper node-fetch wrapper for CommonJS
 const fetch = (...args) =>
@@ -334,3 +334,4 @@ router.post("/:id/vitals", async (req, res) => {
 
 
 module.exports = router;
+
