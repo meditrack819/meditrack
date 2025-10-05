@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 // Hardcode backend API URL
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://meditrack.space/api";
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -132,4 +132,5 @@ export default function Register() {
     </div>
   );
 }
+
 
