@@ -7,7 +7,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 /* ---------- API ---------- */
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://meditrack.space/api";
+const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 const api = axios.create({ baseURL: API_BASE, timeout: 15000 });
 
 const getJSON = async (path, params) =>
@@ -482,4 +482,5 @@ export default function ServiceCalendar() {
     </div>
   );
 }
+
 
