@@ -4,8 +4,8 @@ import axios from "axios";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
-const RX_API = `${API_BASE}api/prescriptions`;
-const PT_API = `${API_BASE}/api/patients`;
+const RX_API = `${API_BASE}/prescriptions`;
+const PT_API = `${API_BASE}/patients`;
 
 const Styles = () => (
   <style>{`
@@ -436,6 +436,7 @@ export default function Prescriptions() {
     </div>
   );
 }
+
 
 
 
