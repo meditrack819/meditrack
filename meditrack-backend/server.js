@@ -65,31 +65,46 @@ app.use((req, res, next) => {
 });
 
 /* -----------------------------------------------------
-   🚏 Routes — load and verify mounts
+   🛣️ Routes — load and verify mounts
 ----------------------------------------------------- */
 try {
   console.log("⏳ Loading routes...");
 
+  // ✅ AUTH ROUTES
   const authRoutes = require("./routes/auth");
   app.use("/api/auth", authRoutes);
   console.log("✅ Auth routes mounted at /api/auth");
 
+  // ✅ APPOINTMENT ROUTES
   const apptRoutes = require("./routes/appointments");
   app.use("/api/appointments", apptRoutes);
   console.log("✅ Appointment routes mounted at /api/appointments");
 
+  // ✅ PATIENT ROUTES
   const patientRoutes = require("./routes/patients");
   app.use("/api/patients", patientRoutes);
   console.log("✅ Patient routes mounted at /api/patients");
 
+  // ✅ PRESCRIPTION ROUTES
   const prescriptionRoutes = require("./routes/prescriptions");
   app.use("/api/prescriptions", prescriptionRoutes);
   console.log("✅ Prescription routes mounted at /api/prescriptions");
 
+  // ✅ STOCK ROUTES
   const stockRoutes = require("./routes/stock");
   app.use("/api/stock", stockRoutes);
   console.log("✅ Stock routes mounted at /api/stock");
 
+  // ✅ DEBUG / TEST ROUTE
+  app.get("/api/test", (req, res) => {
+    res.json({ message: "✅ API is alive" });
+  });
+
+  // ✅ FALLBACK
+  app.use((req, res) => {
+    console.warn(`⚠️ 404 Not Found: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ error: "Not Found", path: req.originalUrl });
+  });
 } catch (err) {
   console.error("❌ Route mounting error:", err);
 }
