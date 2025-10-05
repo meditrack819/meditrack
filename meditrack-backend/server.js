@@ -38,23 +38,23 @@ try {
   console.log("⏳ Loading routes...");
 
   const authRoutes = require("./routes/auth");
-  app.use("/auth", authRoutes); // ✅ NO /api prefix here
+  app.use("/api/auth", authRoutes); // ✅ NO /api prefix here
   console.log("✅ Auth routes mounted at /auth");
 
   const apptRoutes = require("./routes/appointments");
-  app.use("/appointments", apptRoutes);
+  app.use("/api/appointments", apptRoutes);
   console.log("✅ Appointment routes mounted at /appointments");
 
   const patientRoutes = require("./routes/patients");
-  app.use("/patients", patientRoutes);
+  app.use("/api/patients", patientRoutes);
   console.log("✅ Patient routes mounted at /patients");
 
   const prescriptionRoutes = require("./routes/prescriptions");
-  app.use("/prescriptions", prescriptionRoutes);
+  app.use("/api/prescriptions", prescriptionRoutes);
   console.log("✅ Prescription routes mounted at /prescriptions");
 
   const stockRoutes = require("./routes/stock");
-  app.use("/stock", stockRoutes);
+  app.use("/api/stock", stockRoutes);
   console.log("✅ Stock routes mounted at /stock");
 } catch (err) {
   console.error("❌ Route mounting error:", err);
