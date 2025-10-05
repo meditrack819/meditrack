@@ -158,7 +158,7 @@ try {
   mlRoutes = require("./routes/ml");
 } catch {}
 
-app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/api/patients", patientRoutes);
 
 // 👇 multer (prescriptions) must come BEFORE global JSON parsing interference
