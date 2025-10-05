@@ -113,15 +113,14 @@ try {
 /* -----------------------------------------------------
    🧪 Test Routes
 ----------------------------------------------------- */
-// Direct test — bypasses routes
 app.get("/api/auth/test-direct", (req, res) => {
   res.json({ message: "✅ Direct route from server.js works" });
 });
 
-// Shortcut root test
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ API is alive" });
 });
+
 
 /* -----------------------------------------------------
    💚 Health Check
