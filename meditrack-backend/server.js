@@ -32,32 +32,53 @@ app.use((req, res, next) => {
 });
 
 /* -----------------------------------------------------
-   🚏 Routes
+   🚏 Routes (each in its own try/catch)
 ----------------------------------------------------- */
-try {
-  console.log("⏳ Loading routes...");
+console.log("⏳ Loading routes...");
 
+// AUTH ROUTES
+try {
   const authRoutes = require("./routes/auth");
   app.use("/api/auth", authRoutes);
   console.log("✅ Auth routes mounted at /api/auth");
+} catch (err) {
+  console.error("❌ Failed to load auth routes:", err.message);
+}
 
+// APPOINTMENTS ROUTES
+try {
   const apptRoutes = require("./routes/appointments");
   app.use("/api/appointments", apptRoutes);
   console.log("✅ Appointment routes mounted at /api/appointments");
+} catch (err) {
+  console.error("❌ Failed to load appointment routes:", err.message);
+}
 
+// PATIENT ROUTES
+try {
   const patientRoutes = require("./routes/patients");
   app.use("/api/patients", patientRoutes);
   console.log("✅ Patient routes mounted at /api/patients");
+} catch (err) {
+  console.error("❌ Failed to load patient routes:", err.message);
+}
 
+// PRESCRIPTION ROUTES
+try {
   const prescriptionRoutes = require("./routes/prescriptions");
   app.use("/api/prescriptions", prescriptionRoutes);
   console.log("✅ Prescription routes mounted at /api/prescriptions");
+} catch (err) {
+  console.error("❌ Failed to load prescription routes:", err.message);
+}
 
+// STOCK ROUTES
+try {
   const stockRoutes = require("./routes/stock");
   app.use("/api/stock", stockRoutes);
   console.log("✅ Stock routes mounted at /api/stock");
 } catch (err) {
-  console.error("❌ Route mounting error:", err);
+  console.error("❌ Failed to load stock routes:", err.message);
 }
 
 /* -----------------------------------------------------
