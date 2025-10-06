@@ -4,8 +4,8 @@ const router = express.Router();
 const { pool } = require("../db");
 const { createClient } = require("@supabase/supabase-js");
 const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
-// const sms = require("../utils/sms");
+const bcrypt = require("bcrypt");
+const { sendSMS } = require("../utils/sms"); // ✅ SMS utility
 
 // ✅ Proper node-fetch wrapper for CommonJS
 const fetch = (...args) =>
@@ -86,7 +86,7 @@ const normalizeIncoming = (body) => {
   p.religion = toNull(p.religion) ? titleCase(p.religion) : null;
   p.civil_status = toNull(p.civil_status) ? titleCase(p.civil_status) : null;
   p.work = toNull(p.work) ? titleCase(p.work) : null;
-
+  p.last_visit = ymdOrNull(p.last_visit);
   return p;
 };
 
@@ -205,6 +205,189 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// CREATE
+router.post("/", async (req, res) => {
+  const client = await pool.connect();
+  let authUserId = null;
+
+  try {
+    const p = normalizeIncoming(req.body || {});
+    if (!p.first_name || !p.last_name) {
+      return res.status(400).json({ error: "first_name and last_name required" });
+    }
+
+    const year = String(new Date().getFullYear()).slice(-2);
+    let family_no = p.family_no || null;
+    let id = p.id || null;
+
+    if (family_no && id) {
+      const { rowCount } = await client.query(
+        `SELECT 1 FROM patients WHERE id = $1 OR (family_no = $2 AND id = $1)`,
+        [id, family_no]
+      );
+      if (rowCount > 0) {
+        return res.status(400).json({ error: "Family no or ID already exists" });
+      }
+    } else if (family_no && !id) {
+      id = await generateIdFromFamily(client, family_no, year);
+    } else {
+      const generated = await generateFamilyAndId(client, year);
+      family_no = generated.family_no;
+      id = generated.id;
+    }
+
+    const finalEmail = p.email ? p.email : `${id}@patients.local`;
+    const finalPassword = generatePassword();
+
+    const { data: created, error: createErr } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: finalEmail,
+        password: finalPassword,
+        email_confirm: true,
+        user_metadata: {
+          role: "patient",
+          patient_id: id,
+          name: `${p.first_name} ${p.last_name}`.trim(),
+          must_change_password: true,
+        },
+      });
+    if (createErr) {
+      const msg = createErr.message || "Auth create failed";
+      const http = /already/i.test(msg) ? 409 : 400;
+      return res.status(http).json({ error: `Auth create failed: ${msg}` });
+    }
+    authUserId = created?.user?.id || null;
+
+    await client.query("BEGIN");
+    const hashedPassword = await bcrypt.hash(finalPassword, 10);
+
+    const insertQ = `
+      INSERT INTO patients
+        (id, family_no, first_name, middle_name, last_name, email, phone,
+         birthdate, sex, building_no, street, barangay, city, last_visit, user_id, password)
+      VALUES
+        ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+      RETURNING id, family_no;
+    `;
+    const vals = [
+      id, family_no, p.first_name, p.middle_name, p.last_name,
+      finalEmail, p.phone, p.birthdate, p.sex, p.building_no, p.street,
+      p.barangay, p.city, p.last_visit, authUserId, hashedPassword
+    ];
+
+    const { rows: inserted } = await client.query(insertQ, vals);
+    await client.query("COMMIT");
+
+    // ✅ Send SMS notification
+    if (p.phone) {
+      try {
+        await sendSMS(p.phone, `Welcome to MediTrack! Your login email is ${finalEmail} and your temporary password is ${finalPassword}`);
+      } catch (e) {
+        console.warn("⚠️ SMS send failed:", e.message);
+      }
+    }
+
+    return res.status(201).json({
+      id: inserted[0].id,
+      family_no: inserted[0].family_no,
+      email: finalEmail,
+      password: finalPassword,
+    });
+  } catch (err) {
+    try { await client.query("ROLLBACK"); } catch {}
+    if (authUserId && supabaseAdmin) {
+      try { await supabaseAdmin.auth.admin.deleteUser(authUserId); } catch {}
+    }
+    console.error("❌ POST /patients failed:", err);
+    return res.status(500).json({ error: err.message || "Insert error" });
+  } finally {
+    client.release();
+  }
+});
+
+// UPDATE
+router.put("/:id", async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const id = req.params.id;
+    const { rows: existingRows } = await client.query(
+      `SELECT id FROM patients WHERE id = $1`,
+      [id]
+    );
+    if (existingRows.length === 0)
+      return res.status(404).json({ error: "Patient not found" });
+
+    const p = normalizeIncoming(req.body || {});
+    await client.query("BEGIN");
+
+    const q = `
+      UPDATE patients SET
+        first_name = COALESCE($1, first_name),
+        middle_name= COALESCE($2, middle_name),
+        last_name  = COALESCE($3, last_name),
+        phone      = COALESCE($4, phone),
+        birthdate  = COALESCE($5, birthdate),
+        sex        = COALESCE($6, sex),
+        building_no= COALESCE($7, building_no),
+        street     = COALESCE($8, street),
+        barangay   = COALESCE($9, barangay),
+        city       = COALESCE($10, city),
+        last_visit = COALESCE($11, last_visit)
+      WHERE id = $12
+      RETURNING *;
+    `;
+    const vals = [
+      toNull(p.first_name), toNull(p.middle_name), toNull(p.last_name),
+      toNull(p.phone), toNull(p.birthdate), toNull(p.sex),
+      toNull(p.building_no), toNull(p.street), toNull(p.barangay),
+      toNull(p.city), toNull(p.last_visit), id,
+    ];
+    const { rows } = await client.query(q, vals);
+    await client.query("COMMIT");
+    res.json(rows[0]);
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("❌ update patient:", err);
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+// DELETE
+router.delete("/:id", async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const { rows: existing } = await client.query(
+      `SELECT id, user_id FROM patients WHERE id = $1`,
+      [req.params.id]
+    );
+    if (existing.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Patient not found" });
+    }
+    const userId = existing[0].user_id;
+    const { rows } = await client.query(
+      `DELETE FROM patients WHERE id = $1 RETURNING id`,
+      [req.params.id]
+    );
+    if (userId && supabaseAdmin) {
+      try { await supabaseAdmin.auth.admin.deleteUser(userId); } catch (e) {
+        console.error("⚠️ delete auth user:", e.message);
+      }
+    }
+    await client.query("COMMIT");
+    res.json({ message: "✅ Patient deleted", id: rows[0].id });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("❌ delete patient:", err);
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 /* ---------------- MEDICAL HISTORY ---------------- */
 
 // GET history for patient
@@ -214,10 +397,7 @@ router.get("/:id/history", async (req, res) => {
       `SELECT * FROM patient_medical_history WHERE patient_id = $1 LIMIT 1`,
       [req.params.id]
     );
-    if (rows.length === 0) {
-      return res.json({});
-    }
-    res.json(rows[0]);
+    res.json(rows[0] || {});
   } catch (err) {
     console.error("❌ fetch medical history:", err);
     res.status(500).json({ error: err.message });
@@ -230,50 +410,29 @@ router.put("/:id/history", async (req, res) => {
   try {
     await client.query("BEGIN");
 
-   const fields = [
-  // Past Medical History
-  "diabetes","hypertension","cancer","cancer_site","lung_disease","eye_disease",
-
-  // Chest Pain
-  "chest_pain_exertion","chest_pain_spread","chest_pain_fast",
-  "chest_pain_breathless","chest_pain_sweating","chest_pain_relieved",
-  "chest_pain_30min","chest_pain_other",
-
-  // Family History
-  "family_sakit_puso","family_stroke","family_diabetes","family_cancer",
-  "family_sakit_lungs","family_sakit_bato","family_other",
-
-  // Nutrition
-  "gulay","prutas","isda","karne","processed","maalat_per_week",
-
-  // Alcohol
-  "umiinom","klase_alak","gaano_karami","kadalas_inom","binge",
-
-  // Exercise
-  "ehersisyo","uri_ehersisyo","sapat_ehersisyo",
-
-  // Smoking
-  "naninigarilyo","sticks_per_day","tumigil","years_quit","ever_100_sticks",
-
-  // Stress
-  "stress","stress_dahilan","stress_effect",
-
-  // Risk Screening
-  "weight","height","waist","hip","bmi","wh_ratio",
-  "fbs","rbs","left_bp","right_bp","baseline_bp",
-  "cholesterol","urine_protein","urine_ketones","risk_profile",
-
-  // Cancer Screening
-  "cancer_screened","cancer_screen_type","cancer_screen_result"
-];
+    const fields = [
+      "diabetes","hypertension","cancer","cancer_site","lung_disease","eye_disease",
+      "chest_pain_exertion","chest_pain_spread","chest_pain_fast",
+      "chest_pain_breathless","chest_pain_sweating","chest_pain_relieved",
+      "chest_pain_30min","chest_pain_other",
+      "family_sakit_puso","family_stroke","family_diabetes","family_cancer",
+      "family_sakit_lungs","family_sakit_bato","family_other",
+      "gulay","prutas","isda","karne","processed","maalat_per_week",
+      "umiinom","klase_alak","gaano_karami","kadalas_inom","binge",
+      "ehersisyo","uri_ehersisyo","sapat_ehersisyo",
+      "naninigarilyo","sticks_per_day","tumigil","years_quit","ever_100_sticks",
+      "stress","stress_dahilan","stress_effect",
+      "weight","height","waist","hip","bmi","wh_ratio",
+      "fbs","rbs","left_bp","right_bp","baseline_bp",
+      "cholesterol","urine_protein","urine_ketones","risk_profile",
+      "cancer_screened","cancer_screen_type","cancer_screen_result"
+    ];
 
     const insertCols = ["patient_id", ...fields];
     const insertVals = [req.params.id, ...fields.map(f => req.body[f] ?? null)];
     const placeholders = insertVals.map((_, i) => `$${i + 1}`).join(",");
 
-    const updates = fields
-      .map((f, i) => `${f} = $${i + 2}`) // +2 because patient_id is $1
-      .join(", ");
+    const updates = fields.map((f, i) => `${f} = $${i + 2}`).join(", ");
 
     const upsert = `
       INSERT INTO patient_medical_history (${insertCols.join(", ")})
@@ -295,9 +454,9 @@ router.put("/:id/history", async (req, res) => {
   }
 });
 
-/* ---------------- VITAL SIGNS LOG ---------------- */
+/* ---------------- VITAL SIGNS ---------------- */
 
-// GET all vitals for a patient
+// GET vitals
 router.get("/:id/vitals", async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -314,7 +473,7 @@ router.get("/:id/vitals", async (req, res) => {
   }
 });
 
-// ADD new vitals log entry
+// ADD vitals
 router.post("/:id/vitals", async (req, res) => {
   try {
     const { temp, hr, rr, spo2, systolic, diastolic } = req.body;
@@ -332,6 +491,42 @@ router.post("/:id/vitals", async (req, res) => {
   }
 });
 
+/* ---------------- CHANGE PASSWORD ---------------- */
+router.post("/:id/change-password", async (req, res) => {
+  const { id } = req.params;
+  const { newPassword } = req.body;
+
+  if (!newPassword || newPassword.length < 8) {
+    return res.status(400).json({ error: "Password must be at least 8 characters" });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT user_id FROM patients WHERE id = $1",
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    const userId = rows[0].user_id;
+
+    const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+      password: newPassword,
+      user_metadata: { must_change_password: false },
+    });
+    if (updateErr) throw updateErr;
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await pool.query("UPDATE patients SET password = $1 WHERE id = $2", [
+      hashed, id,
+    ]);
+
+    res.json({ success: true, message: "Password updated" });
+  } catch (err) {
+    console.error("❌ change-password error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
-
