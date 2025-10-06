@@ -31,39 +31,44 @@ app.use((req, res, next) => {
   next();
 });
 
-/* -----------------------------------------------------
-   🛣️ Routes — load and verify mounts
------------------------------------------------------ */
+/* ================== Root ================== */
+app.get("/", (_req, res) => res.send("MediTrack Backend is running 🚀"));
+
+/* ================== Routes ================== */
 try {
   console.log("⏳ Loading routes...");
 
-  // ✅ AUTH ROUTES
   const authRoutes = require("./routes/auth");
   app.use("/api/auth", authRoutes);
   console.log("✅ Auth routes mounted at /api/auth");
 
-  // ✅ APPOINTMENT ROUTES
-  const apptRoutes = require("./routes/appointments");
-  app.use("/api/appointments", apptRoutes);
-  console.log("✅ Appointment routes mounted at /api/appointments");
-
-  // ✅ PATIENT ROUTES
   const patientRoutes = require("./routes/patients");
   app.use("/api/patients", patientRoutes);
   console.log("✅ Patient routes mounted at /api/patients");
 
-  // ✅ PRESCRIPTION ROUTES
   const prescriptionRoutes = require("./routes/prescriptions");
   app.use("/api/prescriptions", prescriptionRoutes);
   console.log("✅ Prescription routes mounted at /api/prescriptions");
 
-  // ✅ STOCK ROUTES
+  const appointmentRoutes = require("./routes/appointments");
+  app.use("/api/appointments", appointmentRoutes);
+  console.log("✅ Appointment routes mounted at /api/appointments");
+
   const stockRoutes = require("./routes/stock");
   app.use("/api/stock", stockRoutes);
   console.log("✅ Stock routes mounted at /api/stock");
+
+  const mlRoutes = require("./routes/ml");
+  app.use("/api/ml", mlRoutes);
+  console.log("✅ ML routes mounted at /api/ml");
+
+  app.get("/api/test", (req, res) => {
+    res.json({ message: "✅ API test route is alive" });
+  });
 } catch (err) {
   console.error("❌ Route mounting error:", err);
 }
+
 
 /* -----------------------------------------------------
    🧪 Direct Test Routes
