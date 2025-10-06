@@ -15,26 +15,57 @@ const Styles = () => (
       --p-blue:#1e40af; --p-red:#dc2626; --p-green:#16a34a; --radius:14px;
     }
     .patients-page, .patients-page *{ box-sizing:border-box; }
-    .patients-page .page{ max-width:1100px; margin:0 auto; padding:16px; }
+    .patients-page .page{ max-width:1100px; margin:0 auto; padding:16px; background:var(--p-bg); min-height:100vh; }
     .patients-page .card{ background:var(--p-card); border:1px solid var(--p-border); border-radius:var(--radius);
-      padding:20px; margin-bottom:12px; }
-    .patients-page h3{ margin:0 0 16px; }
+      padding:20px; margin-bottom:16px; box-shadow:0 4px 8px rgba(0,0,0,.03); }
+    .patients-page h3{ margin:0 0 16px; color:var(--p-text); font-size:1.25rem; font-weight:600; }
     .patients-page .row{ display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:20px; }
     .patients-page .field{ display:flex; flex-direction:column; gap:6px; }
     .patients-page .label{ font-size:12px; color:var(--p-muted); }
     .patients-page .label.req::after{ content:" *"; color:var(--p-red); }
-    .patients-page .input{ border:1px solid var(--p-border); border-radius:10px; padding:10px 12px; min-height:44px; }
+    .patients-page .input{ border:1px solid var(--p-border); border-radius:10px; padding:10px 12px; min-height:44px; font-size:14px; }
     .patients-page .input.error{ border-color:var(--p-red); }
     .patients-page .error-text{ color:var(--p-red); font-size:12px; }
-    .pill{ border:0; border-radius:999px; padding:10px 16px; font-weight:700; cursor:pointer; }
+    .pill{ border:0; border-radius:999px; padding:10px 16px; font-weight:700; cursor:pointer; font-size:13px; }
     .pill.blue{ background:var(--p-blue); color:#fff; }
     .pill.green{ background:var(--p-green); color:#fff; }
     .pill.red{ background:var(--p-red); color:#fff; }
-    table{ width:100%; border-collapse:collapse; }
-    th{ background:var(--p-blue); color:#fff; padding:10px; text-align:left; }
-    td{ padding:10px; border-bottom:1px solid var(--p-border); }
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:1000; }
-    .modal-card{ width:min(720px,100%); background:#fff; border-radius:16px; padding:18px; }
+    .pill.gray{ background:var(--p-border); color:#111; }
+    .pill:hover{ opacity:.9; }
+
+    table{ width:100%; border-collapse:collapse; font-size:14px; }
+    th{ background:var(--p-blue); color:#fff; padding:10px; text-align:left; white-space:nowrap; }
+    td{ padding:10px; border-bottom:1px solid var(--p-border); vertical-align:middle; }
+    .table-wrap{ overflow-x:auto; }
+    .cell-actions{ display:flex; flex-wrap:wrap; gap:6px; }
+
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:1000; padding:10px; }
+    .modal-card{ width:min(720px,100%); background:#fff; border-radius:16px; padding:18px; max-height:90vh; overflow:auto; }
+
+    /* ✅ Responsive adjustments */
+    @media (max-width: 992px) {
+      .patients-page .page { padding:12px; }
+      .patients-page .row { grid-template-columns:repeat(6,1fr); gap:12px; }
+      th, td { font-size:13px; padding:8px; }
+    }
+
+    @media (max-width: 768px) {
+      .patients-page .row { grid-template-columns:repeat(2,1fr); }
+      .patients-page .card { padding:16px; }
+      .pill { padding:8px 12px; font-size:12px; }
+      table { font-size:12px; }
+      .cell-actions { flex-direction:column; align-items:flex-start; }
+    }
+
+    @media (max-width: 480px) {
+      .patients-page .row { grid-template-columns:1fr; }
+      .patients-page h3 { font-size:1.1rem; }
+      .patients-page .input { font-size:13px; padding:8px 10px; }
+      .patients-page .card { padding:14px; border-radius:10px; }
+      .table-wrap { overflow-x:auto; }
+      th, td { white-space:nowrap; }
+      .pill { width:100%; text-align:center; }
+    }
   `}</style>
 );
 
@@ -83,10 +114,8 @@ export default function Patients() {
   const [error, setError] = useState("");
   const [modalData, setModalData] = useState(null);
   const [search, setSearch] = useState("");
-
   const [editingOpen, setEditingOpen] = useState(false);
   const [editingPatientId, setEditingPatientId] = useState(null);
-
   const navigate = useNavigate();
 
   const toNull = (v)=> (v==null || (typeof v==="string" && v.trim()==="")) ? null : v;
@@ -133,7 +162,6 @@ export default function Patients() {
     if(v.mode==="existing"){ need("family_no","Family No required"); need("id","ID required"); }
     if(v.mode==="new-known"){ need("family_no","Family No required"); }
 
-    // ✅ phone validation
     if (v.phone) {
       const num = v.phone.replace(/\D/g, "");
       if (!(num.length === 11 && num.startsWith("09"))) {
@@ -352,10 +380,7 @@ export default function Patients() {
                       <td>
                         <div className="cell-actions">
                           <button className="pill green" onClick={() => navigate("/prescriptions", { state: { patient: p } })}>📋 Prescriptions</button>
-                          <button className="pill blue" onClick={()=>{
-                            setEditingPatientId(p.id);
-                            setEditingOpen(true);
-                          }}>✏️ Patient Info</button>
+                          <button className="pill blue" onClick={()=>{ setEditingPatientId(p.id); setEditingOpen(true); }}>✏️ Patient Info</button>
                           <button className="pill red" onClick={()=>del(p.id)}>❌ Delete</button>
                         </div>
                       </td>
@@ -385,4 +410,3 @@ export default function Patients() {
     </div>
   );
 }
-
