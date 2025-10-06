@@ -90,10 +90,128 @@ export default function AdminLogin() {
           Don’t have an account? <Link to="/register">Create one</Link>
         </p>
       </div>
+
+      {/* ✅ Inline responsive CSS */}
+      <style>{`
+        .auth-page {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #1e3a8a, #2563eb);
+          padding: 20px;
+        }
+
+        .auth-card {
+          background: #fff;
+          padding: 40px 30px;
+          border-radius: 12px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+          width: 100%;
+          max-width: 400px;
+          text-align: center;
+        }
+
+        h2 {
+          margin-bottom: 20px;
+          color: #1f2937;
+          font-size: 24px;
+          font-weight: 700;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        input {
+          padding: 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 16px;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+
+        input:focus {
+          border-color: #2563eb;
+        }
+
+        button {
+          background: #2563eb;
+          color: #fff;
+          border: none;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        button:hover {
+          background: #1e40af;
+        }
+
+        .error {
+          color: #dc2626;
+          background: #fee2e2;
+          border: 1px solid #fecaca;
+          padding: 8px;
+          border-radius: 6px;
+          margin-bottom: 12px;
+          font-size: 14px;
+        }
+
+        .switch-link {
+          margin-top: 16px;
+          font-size: 14px;
+          color: #6b7280;
+        }
+
+        .switch-link a {
+          color: #2563eb;
+          font-weight: 500;
+          text-decoration: none;
+        }
+
+        .switch-link a:hover {
+          text-decoration: underline;
+        }
+
+        /* ✅ RESPONSIVE STYLING */
+        @media (max-width: 768px) {
+          .auth-card {
+            padding: 30px 20px;
+            max-width: 90%;
+          }
+
+          h2 {
+            font-size: 20px;
+          }
+
+          input, button {
+            font-size: 15px;
+            padding: 10px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .auth-card {
+            padding: 25px 18px;
+            border-radius: 10px;
+          }
+
+          h2 {
+            font-size: 18px;
+          }
+
+          .switch-link {
+            font-size: 13px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
-
-
-
-
