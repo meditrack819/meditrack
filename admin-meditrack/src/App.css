@@ -8,7 +8,7 @@
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: #1e3a8a; /* deeper blue */
+  background: #1e3a8a;
   color: white;
   display: flex;
   flex-direction: column;
@@ -16,8 +16,9 @@
   top: 0;
   left: 0;
   bottom: 0;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, transform 0.3s ease;
   box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
 }
 
 .sidebar.collapsed {
@@ -35,7 +36,15 @@
   justify-content: space-between;
 }
 
-/* Sidebar navigation */
+.collapse-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Navigation */
 .sidebar nav {
   flex: 1;
   display: flex;
@@ -67,7 +76,6 @@
   font-size: 18px;
 }
 
-/* ✅ Collapsed mode icons only */
 .sidebar.collapsed .nav-item span {
   display: none;
 }
@@ -109,74 +117,91 @@
   background: #b91c1c;
 }
 
-/* Auth pages */
-.auth-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: #f1f5f9;
+/* Overlay for mobile */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
 }
 
-.auth-card {
-  width: 380px;
-  background: #fff;
-  padding: 35px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
+/* Mobile header */
+.mobile-header {
+  display: none;
 }
 
-.auth-card h2 {
-  margin-bottom: 20px;
-  color: #1e40af;
-  font-weight: 700;
+/* ----------------------------------------------
+   ✅ RESPONSIVE FIXES
+---------------------------------------------- */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .main-content {
+    margin-left: 200px;
+    padding: 20px;
+  }
+
+  .sidebar.collapsed {
+    width: 70px;
+  }
+
+  .sidebar.collapsed ~ .main-content {
+    margin-left: 70px;
+  }
 }
 
-.auth-card form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
 
-.auth-card input,
-.auth-card select {
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-}
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1e3a8a;
+    color: #fff;
+    padding: 14px 18px;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+  }
 
-.auth-card button {
-  padding: 10px;
-  background: #1e40af;
-  color: white;
-  font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
+  .mobile-header button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+  }
 
-.auth-card button:hover {
-  background: #1d4ed8;
-}
+  .mobile-header .mobile-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
 
-.error {
-  color: #dc2626;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
+  /* Sidebar becomes sliding drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    width: 220px;
+  }
 
-.switch-link {
-  margin-top: 15px;
-  font-size: 14px;
-}
-.switch-link a {
-  color: #1e40af;
-  text-decoration: none;
-  font-weight: 600;
-}
-.switch-link a:hover {
-  text-decoration: underline;
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding: 16px;
+  }
+
+  .collapse-btn {
+    display: none;
+  }
 }
