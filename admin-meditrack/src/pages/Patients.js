@@ -132,6 +132,15 @@ export default function Patients() {
     need("city","City required");
     if(v.mode==="existing"){ need("family_no","Family No required"); need("id","ID required"); }
     if(v.mode==="new-known"){ need("family_no","Family No required"); }
+
+    // ✅ phone validation
+    if (v.phone) {
+      const num = v.phone.replace(/\D/g, "");
+      if (!(num.length === 11 && num.startsWith("09"))) {
+        errs.phone = "Phone must start with 09 and be 11 digits";
+      }
+    }
+
     return errs;
   };
 
@@ -242,7 +251,13 @@ export default function Patients() {
               </div>
               <div className="field" style={{gridColumn:"span 6"}}>
                 <label className="label req">Phone</label>
-                <input className={`input ${formErrors.phone?"error":""}`} {...bind("phone")}/>
+                <input
+                  className={`input ${formErrors.phone?"error":""}`}
+                  maxLength={11}
+                  pattern="^09[0-9]{9}$"
+                  title="Must start with 09 and be 11 digits"
+                  {...bind("phone")}
+                />
                 {formErrors.phone && <div className="error-text">{formErrors.phone}</div>}
               </div>
               <div className="field" style={{gridColumn:"span 6"}}>
@@ -370,8 +385,3 @@ export default function Patients() {
     </div>
   );
 }
-
-
-
-
-
