@@ -6,8 +6,8 @@ import { sanitizeInput, validateInput } from "../utils/validate";
 /* ---------- CONFIG ---------- */
 const API =
   process.env.REACT_APP_BACKEND_URL ||
-  "https://yourdomain.com/api"; // Must be HTTPS
-const SITE_KEY = "YOUR_RECAPTCHA_SITE_KEY"; // 👈 Replace with your real one
+  "https://meditrack.space/admin"; // Must be HTTPS
+const SITE_KEY = "6LfeHOErAAAAAMfyt2Xui3xBGy5Djw3snxx6kQwb"; // 👈 Replace with your real one
 
 export default function SecureForm() {
   const [form, setForm] = useState({
