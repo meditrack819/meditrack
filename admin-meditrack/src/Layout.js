@@ -81,7 +81,7 @@ export default function Layout({ children }) {
                 <i className="fas fa-calendar-alt"></i>{" "}
                 <span>Vaccination Calendar</span>
               </NavLink>
-              <NavLink className="nav-item" to="/PTP/calendar">
+              <NavLink className="nav-item" to="/PT/calendar">
                 <i className="fas fa-calendar-alt"></i> <span>PT Calendar</span>
               </NavLink>
             </>
@@ -131,3 +131,4 @@ export default function Layout({ children }) {
     </div>
   );
 }
+
