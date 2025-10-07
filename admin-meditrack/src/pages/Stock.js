@@ -8,8 +8,10 @@ import {
   LineChart, Line
 } from "recharts";
 
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
-
+const API =
+  process.env.REACT_APP_BACKEND_URL ||
+  process.env.REACT_APP_API_URL ||
+  "http://localhost:5000/api";
 
 
 // ML backend (FastAPI/uvicorn) — must match .env
@@ -147,7 +149,19 @@ const InjectStyles = () => (
       td[data-label="Action"] .actions,
       td[data-label="Actions"] .actions{ justify-content:flex-end; }
     }
-
+      
+    /* Low stock badge */
+.low-stock-badge {
+  display: inline-block;
+  background: #facc15;   /* yellow */
+  color: #111827;        /* dark text */
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid #eab308; /* darker yellow border */
+}
+  
     /* Modal */
     .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:1000; padding:16px; }
     .modal-card{ width:min(560px,100%); background:var(--modal-bg); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:0 8px 28px rgba(0,0,0,.2); color:var(--text); }
@@ -493,9 +507,6 @@ export default function Stock(){
 
       {/* ML status + dataset uploader + theme toggle */}
       <div className="toolbar">
-        <span className={`pill ${mlOk==null?"neutral":mlOk?"good":"bad"}`} aria-live="polite">
-          ML: {mlOk==null?"…":mlOk?"Online":"Offline"} {mlMsg?`• ${mlMsg}`:""}
-        </span>
 
         <div className="switch" style={{marginLeft:"auto"}}>
           <input
@@ -581,20 +592,7 @@ export default function Stock(){
         </Panel>
       </div>
 
-      <Panel title="Months Until Restock (Nearest 15)">
-        <div style={{width:"100%",height:340}}>
-          <ResponsiveContainer>
-            <LineChart data={stockoutHorizon}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} interval={0} angle={-30} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="months" dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        {!restockPlan.length && <p className="hint" style={{marginTop:8}}>Restock plan appears once the ML service is reachable.</p>}
-      </Panel>
+      
 
       {/* Form */}
       <div className="card">
@@ -624,6 +622,7 @@ export default function Stock(){
         <table>
           <thead>
             <tr>
+              <th>Status</th>
               <th>ID</th>
               <th>Medicine</th>
               <th>Quantity</th>
@@ -636,6 +635,12 @@ export default function Stock(){
           <tbody>
             {filteredItems.map((it) => (
               <tr key={it.id}>
+               <td data-label="Status" className="status-col" style={{ textAlign: "center" }}>
+        {Number(it?.quantity ?? 0) <= 25 ? (
+          <span className="low-stock-badge">Low Stock</span>
+        ) : null}
+      </td> 
+
                 <td data-label="ID"><span className="cell-val">{it.id}</span></td>
                 <td data-label="Medicine"><span className="cell-val">{it.medicine_name}</span></td>
                 <td data-label="Quantity"><span className="cell-val">{it.quantity}</span></td>
@@ -656,7 +661,7 @@ export default function Stock(){
             ))}
             {!filteredItems.length && (
               <tr>
-                <td data-label="Info" colSpan={7} style={{textAlign:"center",padding:16,color:"var(--muted)"}}>No matching items</td>
+                <td data-label="Info" colSpan={8} style={{textAlign:"center",padding:16,color:"var(--muted)"}}>No matching items</td>
               </tr>
             )}
           </tbody>
