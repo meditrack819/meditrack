@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 const LOGIN_URL = `${API_BASE}/api/auth/staff/login`;
-const RECAPTCHA_SITE_KEY = "YOUR_RECAPTCHA_SITE_KEY"; // replace with your key
+const RECAPTCHA_SITE_KEY = "6LetyeErAAAAAFs98bq-wMIExs9omlZbPLWcd4FQ";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -169,3 +169,4 @@ export default function AdminLogin() {
     </div>
   );
 }
+
