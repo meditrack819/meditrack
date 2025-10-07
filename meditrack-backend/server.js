@@ -1,6 +1,8 @@
 // backend/server.js
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const app = express();
@@ -9,6 +11,21 @@ const PORT = process.env.PORT || 5000;
 /* -----------------------------------------------------
    🔧 Middleware
 ----------------------------------------------------- */
+
+// 🧱 Security headers
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // disable if inline styles/scripts used
+  })
+);
+
+// 🧁 Parse cookies for JWT HttpOnly cookie auth
+app.use(cookieParser());
+
+// 🧾 Body parser
+app.use(express.json({ limit: "1mb" }));
+
+// 🌍 CORS — allow only trusted origins
 app.use(
   cors({
     origin: [
@@ -18,23 +35,20 @@ app.use(
       "https://www.meditrack.space",
       "https://admin.meditrack.space",
     ],
-    credentials: true,
+    credentials: true, // allow cookies / credentials
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
-app.use(express.json());
 
-/* -----------------------------------------------------
-   🧾 Logger
------------------------------------------------------ */
+// 🪵 Request logger
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.originalUrl}`);
   next();
 });
 
-/* ================== Root ================== */
-app.get("/", (_req, res) => res.send("MediTrack Backend is running 🚀"));
-
-/* ================== Routes ================== */
+/* -----------------------------------------------------
+   🧩 Routes
+----------------------------------------------------- */
 try {
   console.log("⏳ Loading routes...");
 
@@ -62,36 +76,22 @@ try {
   app.use("/api/ml", mlRoutes);
   console.log("✅ ML routes mounted at /api/ml");
 
-  app.get("/api/test", (req, res) => {
+  app.get("/api/test", (_req, res) => {
     res.json({ message: "✅ API test route is alive" });
   });
 } catch (err) {
   console.error("❌ Route mounting error:", err);
 }
 
-
 /* -----------------------------------------------------
-   🧪 Direct Test Routes
+   💚 Health & Diagnostics
 ----------------------------------------------------- */
-app.get("/api/test", (req, res) => {
-  res.json({ message: "✅ API is alive" });
-});
-
-app.get("/api/auth/test", (req, res) => {
-  res.json({ message: "✅ Auth route working fine" });
-});
-/* -----------------------------------------------------
-   💚 Health Check
------------------------------------------------------ */
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", uptime: process.uptime() });
-});
-
-/* -----------------------------------------------------
-   🧭 Root Endpoint
------------------------------------------------------ */
-app.get("/", (req, res) => {
-  res.send("✅ MediTrack Backend is running 🚀");
+app.get("/health", (_req, res) => {
+  res.json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
 });
 
 /* -----------------------------------------------------
@@ -106,5 +106,5 @@ app.use((req, res) => {
    🚀 Start Server
 ----------------------------------------------------- */
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`✅ MediTrack Backend running securely on port ${PORT}`);
 });
