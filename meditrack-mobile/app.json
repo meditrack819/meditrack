@@ -1,0 +1,69 @@
+{
+  "cli": {
+    "appVersionSource": "local"
+  },
+  "expo": {
+    "name": "MediTrack",
+    "slug": "meditrack",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/meditrack-icon.png",
+    "splash": {
+      "image": "./assets/meditrack-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "icon": "./assets/meditrack-icon.png",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
+    },
+    "android": {
+      "icon": "./assets/meditrack-icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/meditrack-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "useNextNotificationsApi": true,
+      "permissions": [
+        "SCHEDULE_EXACT_ALARM",
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK",
+        "VIBRATE",
+        "FOREGROUND_SERVICE",
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_NOTIFICATION_POLICY"
+      ],
+      "package": "com.meditrack.mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      "expo-notifications"
+    ],
+    "extra": {
+      "EXPO_PUBLIC_SUPABASE_URL": "https://xtrmfyvxuqgnqossjfnm.supabase.co",
+      "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0cm1meXZ4dXFnbnFvc3NqZm5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1OTY4MjQsImV4cCI6MjA3MTE3MjgyNH0.PiO1hSfG6Hi1bBNZlDKUz3WRWyc56BElUMdUGDYDhB8",
+      "EXPO_PUBLIC_API_BASE": "https://meditrack.space/api",
+      "eas": {
+        "projectId": "c9c776a3-cfc4-4e21-a37c-b9bd1faf6934"
+      }
+    },
+    "owner": "xhap"
+  }
+}
